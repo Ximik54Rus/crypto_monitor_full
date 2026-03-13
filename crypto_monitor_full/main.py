@@ -8,6 +8,9 @@ import numpy as np
 import talib
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+import logging
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
 
 BINANCE_REST = "https://api.binance.com"
 USDT = "USDT"
@@ -139,7 +142,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+    
 @app.websocket("/ws")
 async def ws_endpoint(ws: WebSocket):
     await ws.accept()
@@ -166,4 +172,5 @@ async def ws_endpoint(ws: WebSocket):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
